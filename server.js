@@ -9,6 +9,8 @@ app.use(express.static(__dirname))
 app.use(express.urlencoded({extended: false})); 
 app.use(express.json());
 
+mongoose.Promise = Promise
+
 var dbUrl = 'mongodb+srv://user:user@learning-node.geipr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 
 var Message = mongoose.model('Message', {
@@ -24,15 +26,28 @@ app.get('/messages', (req, res) => {
     
 })
 
-app.post('/messages', (req, res) => {
+app.post('/messages', async (req, res) => {
     var message = new Message(req.body)
 
-    message.save((err) => {
-        if(err)
-            sendStatus(500)
+    var savedMessage = await message.save()
+    
+    console.log('saved')
+
+    var censored = await Message.findOne({message: 'badword'})
+    
+    if(censored){
+        console.log('delete censored word')      
+        await Message.deleteOne({_id: censored.id})
+    }
+    else
         io.emit('message', req.body)
-        res.sendStatus(200)
-    })
+    
+    res.sendStatus(200)
+    
+    // .catch((err) => {
+    //     res.sendStatus(500)
+    //     return console.error(err)
+    // })
 })
 
 io.on('connection', (socket) => {
