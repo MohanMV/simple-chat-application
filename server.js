@@ -37,7 +37,7 @@ app.post('/messages', async (req, res) => {
     
         var censored = await Message.findOne({message: 'badword'})
         
-        if(censored)      
+        if(censored) 
             await Message.deleteOne({_id: censored.id})
         else
             io.emit('message', req.body)
