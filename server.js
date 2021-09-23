@@ -18,7 +18,6 @@ var Message = mongoose.model('Message', {
     message: String
 })
 
-
 app.get('/messages', (req, res) => {
     Message.find({}, (err, messages) => {
         res.send(messages)
@@ -36,7 +35,6 @@ app.get('/messages/:user', (req, res) => {
 })
 
 app.post('/messages', async (req, res) => {
-
     try {
         var message = new Message(req.body)
         var savedMessage = await message.save()        
@@ -54,8 +52,6 @@ app.post('/messages', async (req, res) => {
         console.log('message post called')
     }
 })
-
- 
 
 io.on('connection', (socket) => {
     console.log('a user is connected')
